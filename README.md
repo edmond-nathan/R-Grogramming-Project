@@ -1,13 +1,7 @@
-# R-Programming-Project
----
-title: "IMPACT OF COVID19 ON AIR TRAVEL"
-author: "Edmond Nathan"
-date: "2023-04-20"
-  output:
-  word_document: default
-  html_document: default
-  pdf_document: default
----
+
+# IMPACT OF COVID-19 ON AIR TRAVEL
+# By Edmond Nathan
+# On 2023-04-20"
 
 
 ```{r global-options, include=FALSE}
@@ -160,7 +154,7 @@ Figure 1.2: Boxplot: Number of arrivals across years
 
 Figure 1.1 and 1.2 above shows the distribution of the mean, 1st, 2nd and 3rd interquartile range. It can also be seen that years such as 2021 contain outliers: the values beyond the whiskers, they can sometimes negatively skew result of analysis. Each box represent the 1st, 2nd and 3rd interquartile range. For instance,year 2017 in figure 1.2 seem to have a larger interquartile range (the box), this means the middle 50% has more spread than that of 2020 which as a smaller interquartile range.
 
-# Data Cleaning/Wrangling Process
+## Data Cleaning/Wrangling Process
 
 ## Evaluating Missing data
 R provides a number of functions for identifying observations that contain missing values. The function is.na() allows one to test for the presence of missing values (Robert, 2015). The pipe operator and the *summarise_all()* from the **dplyr** package was used to evaluate the total number of missing values in the flight dataset as shown below
@@ -184,7 +178,7 @@ flight %>%
 ```
 The result was displayed in a tabular form, it can be seen that the columns FLT_DEP_IFR_2, FLT_ARR_IFR_2, FLT_TOT_IFR_2, were seen to contain a total missing or NA values of *1439355*. Each having a total of *479785*.
 
-### Handling Missing Values
+## Handling Missing Values
 According to the information provided on [Github link](https://github.com/rfordatascience/tidytuesday/tree/master/data/2022/2022-07-12), the FLT_DEP_1, FLT_ARR_1, FLT_TOT_1 and FLT_DEP_IFR_2, FLT_ARR_IFR_2, FLT_TOT_IFR_2 are the same data. only that the data sources differs. The former is recorded by the *network manager*, while the later is recorded by the *airport operators*. As a result, the columns FLT_DEP_IFR_2, FLT_ARR_IFR_2, FLT_TOT_IFR_2 which contain all the missing values will be completely removed, as well as column X which is just serial numbers for the observation, MONTH_MON (month in words), and Pivot.Label (which is combination of the airport name and the airport code).
 In this analysis, variables of interest are YEAR, MONTH_NUM, FLT_DATE, APT_ICAO, APT_NAME, STATE_NAM, FLT_DEP_1, FLT_ARR_1, FLT_TOT_1.
 
