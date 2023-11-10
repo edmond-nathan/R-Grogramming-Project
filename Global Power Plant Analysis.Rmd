@@ -1,0 +1,315 @@
+---
+title: "GLOBAL POWER PLANT ANALYSIS"
+author: "EDMOND NATHAN"
+date: "2023-01-15"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r global-options, include=FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8, fig.path='Figs/',
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+# Introduction
+Electricity is a crucial element that powers modern society. However, obtaining information on the actual electricity generation by power plants is often a challenging task as it is typically closely guarded by plant and system operators and hard to access for others (Luotian etal, 2020) [World Resource Institute Technical Note](https://datasets.wri.org/dataset/globalpowerplantdatabase)
+The Global Power Plant Database is a comprehensive and freely available source of data on power plants around the world. It aims to simplify access to power plant data for comparison, analysis and insights. The database encompasses about 35,000 power plants from 167 countries, covering both thermal plants (such as coal, gas, oil, nuclear, biomass, waste, and geothermal) and renewable (such as hydro, wind, and solar). For each power plant, its geo-location, capacity, generation, ownership, and fuel type are provided. The database is continuously updated with new data as it becomes available on [World Resource Institute](https://datasets.wri.org/dataset/globalpowerplantdatabase)
+
+# Data Visualization
+Data visualization is the process of creating and studying the visual representation of data to bring some meaningful insights as cited on <https://link.springer.com/chapter/10.1007/978-1-4842-4215-5_4> and this analysis is aimed at creating compelling visualization that tell a story comprehensible for the lay man. The following questions will answered after exploring the global power plant database data.
+
+#### Questions
+
+*   Which country has the highest power generation? what fuel type generates the highest GWh of electricity in that country and how environmentally sustainable is the fuel type in terms of carbon emission?
+*   What is the current global distribution of power plants by fuel type?
+*   What is the relationship between power plant capacity and electricity generation, and how does this vary by fuel type and region? Are there any notable trends or patterns that emerge?
+
+## Loading Packages
+All required packages for this analysis are loaded as below. The packages are used for various purposes ranging data summarization, data exploration, data cleaning and data visualization.
+```{r laoding packages, warning=FALSE}
+library(tidyverse)
+library(skimr)
+library(stats)
+library(dplyr)
+library(ggplot2)
+library(maps)
+library(ggtext)
+library(scales)
+```
+
+# The Power Plant Database data
+The data was downloaded from <https://datasets.wri.org/dataset/globalpowerplantdatabase>, as a .csv file. The data is then loaded into the R script environment using the read.csv() function and saved in a data frame as power_plants
+
+```{r Loading Global power plants data, warning=FALSE}
+power_plants_df <- read.csv("global_power_plant_database.csv")
+```
+
+# Data Exploration
+To understand the data, functions from the core tidyverse packages and dplyr packages are used to explore the data to have a quick look at the data structure, data types and characteristics.
+```{r Determining the dimension of the data}
+dim(power_plants_df)
+
+```
+The dim() function from the tidyverse gives displays the dimension of the data. It can be seen that the global power plant database data has a length of 34,936 observations and 36 variables also known as columns.
+
+ 
+The head()and tail() provide quick display of the first few rows an the last few rows of a data respectively. It is useful for quickly inspecting the structure and contents of a data frame or matrix, especially when working with large datasets.
+
+```{r Looking at the first and the last few rows of the data, warning=FALSE}
+head(power_plants_df)
+tail(power_plants_df)
+```
+
+The above results show that the *power_plant* data frame contains characters (categorical variables used for grouping) and numeric variables (continuous variable). This variables are important for grouping and summarization of the data in course of the analysis.
+It also shows that 19 of the 36 variables are characters and 17 are numeric. It also shows that the data has got missing values or NA values present in some columns.
+
+The str() was used to display the internal structure the objects such class, length and first few element in the power plant dataset. 
+```{r Overview of the structure and variables of the data, warning=FALSE}
+str(power_plants_df)
+```
+
+The str() is useful to get a quick overview of the structure of a data frame and its variables. For instance, the output above shows that the dimension of the data is 34,936 by 36 variables which are combination of categorical and numerical variables. It also tells us about the variable names and characteristics such the variable names,: country and primary fuel, both categorical data and generation_gwh and capacity_mw which numerical according to the output.
+
+To further understand the distribution data across different variables, the distribution of capacity in megawatts across different fuel type, a boxplot will be used.
+
+**Visualization of capacity by fuel type**
+```{r Visualization of the distribution the data, warning=FALSE}
+ggplot(power_plants_df %>% filter(primary_fuel != "", country_long != ""), 
+       aes(x = primary_fuel, y = capacity_mw)) + 
+  geom_boxplot( fill = "#800080") +
+  coord_flip() +
+  scale_y_continuous(breaks = seq(0, 25000, 2000)) +
+  labs(title = "Distribution of Capacity by Fuel Type",
+                x = "Fuel Type",
+                y = "Capacity of Power Plant")
+```
+The result of the plot clearly shows the distribution of the capacity of power plant by fuel type. The Nuclear , fuel type have bigger capacity than the other fuel type. Next to it are the Coal and Gas fuel with considerable wider spread and capacity. This comparison can give insights in policy and investment decision aimed at promoting sustainable and efficient energy systems. For instance, due the high emission of greenhouse gases from the coal fuel type, more investment can made in the renewable sources of power generation such as wind, solar, and hydro
+fuel types for environmental sustainability.
+
+# Summary Statistics
+The dataset is passed as argument to the summary() from the tidyverse package to provide a descriptive statistics of the power plant dataset for numerical variables and the length and class of variable categorical variables.
+```{r summary statistics of the data, warning=FALSE}
+summary(power_plants_df)
+```
+The output shows that the variable *country* is of length 34,936 and class: character, while the variable generation_gwh_2013 is numeric with the range -947.60 and 50834.00, while also having a mean of 592.70. It also shows that this variable contain a total missing values of 28519 
+
+```{r Evaluating the total missing values, warning=FALSE}
+power_plants_df %>% 
+  summarise_all(~sum(is.na(.))) %>% 
+  select(1:36) %>% 
+  sum()
+```
+There a total of 296,603 missing or NA values in the power plant data frame.
+
+To answer this questions, the power plants dataset is grouped by country and summarized to get the total generation from 2013 to 2019.
+
+
+```{r Calculating the total generation by country and by fuel type, and sort by total generation, warning=FALSE}
+
+total_generation_country_fuel <- power_plants_df %>%
+  select(name, country_long, primary_fuel, capacity_mw, generation_gwh_2013, generation_gwh_2014, generation_gwh_2015, generation_gwh_2016, generation_gwh_2017, generation_gwh_2018, generation_gwh_2019) %>% 
+  group_by(country_long, primary_fuel) %>% 
+  rowwise() %>%
+  mutate(total_generation = sum(generation_gwh_2013, generation_gwh_2014, generation_gwh_2015, generation_gwh_2016, generation_gwh_2017, generation_gwh_2018, generation_gwh_2019, na.rm = TRUE)) %>%
+arrange(desc(total_generation))
+View(total_generation_country_fuel)
+
+
+total_generation_by_country <- total_generation_country_fuel %>% 
+  group_by(country_long) %>% 
+  summarise(total_generation = sum(total_generation)) %>% 
+  arrange(desc(total_generation)) %>% 
+  top_n(10, total_generation)
+View(total_generation_by_country)
+
+
+# Piping the results to plot total generation by country to see clearly see country ith the highest generation
+total_generation_by_country %>% 
+  ggplot(aes(x = reorder(country_long, total_generation), 
+             y = total_generation)) +
+  geom_bar(stat = "identity", fill = "navy") +
+  scale_y_continuous(breaks = seq(0, 25000000, 1000000)) +
+  coord_flip() +
+  labs(title = "Total Power Generation by Country (2013-2019)",
+       x = NULL,
+       y = "Total Generation (GWh)") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+The results displays countries with the highest electricity generation from 2013 to 2019. United States of America have the highest total generation across the years with about total of 25,000,000 GWh of power generated. This is followed by India with a total of about 5,300,000 GWh of electricity generated. The insight gained from this analysis is important because it provides information on the country that generated the most electricity over a six-year period. This information can be insightful for stakeholders in the energy industry, as it can inform decisions related to energy production, distribution, and investment. In addition, this information can provide insights into the electricity consumption patterns and trends which will in turn aid understanding of the global energy demand and whether is environmentally sustainable.
+
+**what fuel type generates the highest GWh of electricity in the United states of America?**
+To answer this question the country (i.e. United States of America) is filtered from the total generation by country data (total_generation)
+```{r}
+usa_generation_by_fuel_type <- total_generation_country_fuel %>%
+  filter(country_long == "United States of America") %>% 
+  group_by(primary_fuel) %>% 
+  summarise(total_generation_by_fuel_type = sum(total_generation)) %>% 
+  arrange(desc(total_generation_by_fuel_type))
+View(usa_generation_by_fuel_type)
+```
+
+
+**Visualizing with pie chart to show proportions in each segment**
+```{r}
+usa_generation_by_fuel_type %>% 
+  ggplot(aes(x = "", y = total_generation_by_fuel_type , fill = primary_fuel)) + 
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  #geom_text(aes(label = paste0(percent,"%")), position = position_stack(vjust = 0.5)) +
+  theme_void() +
+  labs(title = "Fuel Type Distribution in the United States",
+       fill = "Fuel Type")
+  
+```
+
+# Vizualization of fuel type distribution in the United Sates of America
+```{r}
+usa_generation_by_fuel_type %>% 
+  ggplot(aes(x=reorder(primary_fuel,total_generation_by_fuel_type ), y = total_generation_by_fuel_type))+
+  geom_col(fill = "#FF0000")+
+  scale_y_continuous(breaks = seq(0, 8000000, 1000000)) +
+  coord_flip() +
+  labs(title = "Fuel Type Distribution in The United States of America",
+       x = "Fuel Type Distribution",
+       y = "Capacity (MW)") +
+  theme_bw() 
+  
+```
+ Both plots show the distribution of fuel types in the United States. It can be seen that the most common fuel types in the United States are natural gas and coal, followed by nuclear and hydro. According to the plot, natural gas and Coal generate the highest electricity in GWh with a total number of power generated of 8,494,051.439 GWh and 6,839,125.643 GWh standing at 33.6% and 27.06% of the overall generation respectively. Unfortunately, in terms of environmental sustainability, coal is considered the least environmental friendly type of fuel because of its high emission of carbon and other greenhouse gases. More and policies which charges per greenhouse gas emission might encourage investment emission free power generation technologies such as nuclear, hydro, wind and solar. Therefore,this is insights can inform the need to shift to these sustainable fuel types
+ 
+**What is the current global distribution of power plants by fuel type?**
+
+Since it was observed that they were missing values present in the dataset, the power plant data set will be cleaned and all missing values removed for all variables of interest.
+Therefore, to answer these questions, five (5) variables will be selected. 
+
+```{r Removing missing values and selecting variables of interest before analysis, warning=FALSE}
+cleaned_power_plants_df <- power_plants_df %>%
+  filter(!is.na(primary_fuel)) %>% 
+  filter(!is.na(commissioning_year)) %>% 
+  select(name, country_long, primary_fuel, capacity_mw, commissioning_year)
+head(cleaned_power_plants_df)
+```
+
+Then a dataframe was created to summarise the worldwide  distribution of power plants by fuel type and saved as a power plants distribution data frame.
+
+```{r Calculating te total capacity by fuel type, warning=FALSE}
+power_plants_distribution <- cleaned_power_plants_df %>%
+  group_by(primary_fuel) %>%
+  summarize(total_capacity = sum(capacity_mw), fuel_type_count = n() ) %>%
+  mutate(percent = round(fuel_type_count/sum(fuel_type_count) * 100,2)) %>% 
+  arrange(desc(percent))
+View(power_plants_distribution)
+```
+
+**Visualization by bar plot of the global distribution of power plants by fuel type**
+```{r Bar chart showing the global distribution of power palnts by fuel type, warning=FALSE}
+power_plants_distribution %>% 
+  ggplot(aes(x = reorder(primary_fuel, percent), y = percent)) +
+  geom_bar(stat = "identity", fill = "#d62728") +
+  scale_y_continuous(labels = comma, breaks = seq(0, 50, 2))+
+  coord_flip() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  labs(title = "Global Distribution of Power Plants by Fuel Type",
+       x = "Fuel Type",
+       y = "Percentage of Total Power Plants",
+       caption = "Data collected by: World Resources 
+Institute") +
+  theme_bw()
+```
+The results shows that Hydro, Solar, Gas, and Wind having 21.76%, 20.06%,  15.74%, and 12.92% are the  highest percentage of total power plant globally. These type of fuel have less emission of greenhouse gases ad thereby make them environmentally sustainable. 
+
+
+## What is the relationship between power plant capacity and electricity generation, and how does this vary by fuel type and region? Are there any notable trends or patterns that emerge?
+
+The power plant data was cleaned to remove any missing values or NA values could have been as result of production down time due to maintenance or breakdown in the plant or even non-availability of data from the various sources.
+```{r Cleaning the data of missing values, warning=FALSE}
+power_plants_cleaned <- power_plants_df %>%
+  filter(!is.na(name),
+         !is.na(primary_fuel), 
+         !is.na(generation_gwh_2016), 
+         !is.na(generation_gwh_2017), 
+         !is.na(generation_gwh_2018), 
+         !is.na(country_long), 
+         !is.na(capacity_mw)) %>%
+  select(name, 
+         country_long, 
+         primary_fuel, 
+         capacity_mw, 
+         generation_gwh_2016,
+         generation_gwh_2017, 
+         generation_gwh_2018)
+View(power_plants_cleaned)
+```
+
+# Create a scatterplot of capacity versus generation by fuel type
+```{r Scatter plot showing capacity against power genration by fuel type, warning=FALSE}
+power_plants_cleaned %>% 
+  ggplot(aes(x = capacity_mw, y = generation_gwh_2018)) +
+  geom_point(aes(color = primary_fuel)) +
+  scale_color_manual(values = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#00FFFF", "#072e47", "#7a10fb", "#17becf", "#C0C0C0")) +
+  labs(title = "Capacity vs. Generation by Fuel Type",
+       x = "Capacity (MW)",
+       y = "Generation (GWh)",
+       color = "Primary Fuel") +
+  theme_bw()
+```
+The graph shows the relationship between the power generated (GW/h) for the year 2016 and the capacity of power plant in megawatts, and they seem to have a positive correlation with each other. Hence, the bigger the capacity of the power plant, the higher the generation of power from the plants as expected. The above graph highlights the significant impact of fuel type on a power plant's capacity and electricity generation. for instance, coal and gas-fired power plants shows higher capacity and electricity generation than wind and solar power plants. By implication, the choice of fuel type is a crucial factor that affects the output of a power plant. This insights can help stakeholders make policies like the charges on carbon emissions, in order to encourage investment into cleaner sources of electricity.
+
+In order to see the relationship between average capacity and the generation by fuel type an region, the average capacity and power generated for the year 2016 is calculated by grouped by fuel type and country.
+```{r Calculating the average capacity and average generation for 2016, warning=FALSE}
+average_capacity_generation <- power_plants_cleaned %>%
+  group_by(country_long, primary_fuel) %>%
+  summarize(avg_capacity = mean(capacity_mw, na.rm = TRUE),
+            avg_generation = mean(generation_gwh_2016, na.rm = TRUE)) %>% 
+  arrange(desc(avg_generation))
+View(average_capacity_generation)
+```
+**Visualization of average capacity and generation by fuel type and region using bar chart**
+This plot of the average generation versus average capacity by fuel type and region using bar chart provided important insights into the efficiency and performance of power plants across different regions and fuel types. Comparing these variables for each fuel and region can give insights into which regions and fuel types are generating more power per unit capacity, and which generate less.
+
+```{r A bar chart showing average capacity and aaverage generation for 2016 by fuel type, warning=FALSE}
+average_capacity_generation %>% 
+  ggplot(aes(x = country_long, y = avg_capacity, 
+             fill = reorder(primary_fuel, avg_capacity))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(labels = comma, breaks = seq(0, 2000, 100))+
+  labs(title = "Average Capacity and Generation by Fuel Type and Region, Year 2016",
+       x = "Region",
+       y = "Capacity (MW)",
+       fill = "Primary Fuel") +
+  theme_bw()
+
+```
+The graph shows that United State of America generates the largest power generated by Nuclear fuel types, followed by the region India Australia doesn't seem to produce electricity by Nuclear fuel type. 
+It also shows that Australia produces the largest volume of electricity by Coal fuel type, again followed by the region India.
+
+
+Creating similar visualization for average power generation per unit capacity by region and fuel type to see if there is a pattern or trend.
+```{r Calcuating the average of capacity and ageneration for year 2018, warning=FALSE}
+avg_capacity_generation_2018 <- power_plants_cleaned %>%
+  group_by(country_long, primary_fuel) %>%
+  summarize(avg_capacity = mean(capacity_mw, na.rm = TRUE),
+            avg_generation = mean(generation_gwh_2018, na.rm = TRUE)) %>% 
+  arrange(desc(avg_generation))
+View(avg_capacity_generation_2018)
+```
+
+### Visualization of average capacity and average generation for the year 2018
+```{r A bar chart showing the average capacity and average generation for 2018, warning=FALSE}
+average_capacity_generation %>% 
+  ggplot(aes(x = country_long, 
+             y = avg_capacity, 
+             fill = reorder(primary_fuel, avg_capacity))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(labels = comma, breaks = seq(0, 2000, 100))+
+  labs(title = "Average Capacity and Generation by Fuel Type and Region, Year 2018",
+       x = "Region",
+       y = "Capacity (MW)",
+       fill = "Primary Fuel") +
+  theme_bw()
+```
+This plot for generation in the year 2018 shows a similar trend or pattern to the bar chart that plots the average capacity against average generation for 2016, United State Of America still generates electricity by Nuclear fuel type, then followed by the region India.
+
+
