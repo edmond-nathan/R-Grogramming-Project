@@ -1,4 +1,3 @@
-
 # IMPACT OF COVID-19 ON AIR TRAVEL
 # By Edmond Nathan
 # On 2023-04-20"
