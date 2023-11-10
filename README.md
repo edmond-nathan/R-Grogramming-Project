@@ -2,7 +2,6 @@
 # By Edmond Nathan
 # On 2023-04-20"
 
-
 ```{r global-options, include=FALSE}
 knitr::opts_chunk$set(fig.width=14, fig.height=10, fig.path='Figs/',
                       echo=FALSE, warning=FALSE, message=FALSE)
