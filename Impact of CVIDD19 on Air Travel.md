@@ -12,9 +12,9 @@ knitr::opts_chunk$set(fig.width=14, fig.height=10, fig.path='Figs/',
 ## INTRODUCTION
 The European flights dataset is collected monthly by [Eurocontrol](https://ansperformance.eu/data/): A pan-European, civil-military organisation dedicated to supporting European aviation. The data on commercial flights is inclusive of scheduled and non-scheduled commercial flights such as passengers, freight and mail performed under Instrument Flight Rules (IFR).
 According to an article on <https://ec.europa.eu>, countries around the world took different restrictive measures since the beginning of 2020: The inception of COVID-19, to prevent the spread of the virus. The aviation industry like most, suffered daring effects of the pandemic. However, recent studies on commercial flights show plausible signs of recovery. The datasets provided herein is useful for exploring and visualizing the patterns in air transport over time. Although, the European flights is from [Eurocontrol](https://ansperformance.eu/data/), further information provided was found on [github tidytuesday](https://github.com/rfordatascience/tidytuesday/tree/master/data/2022/2022-07-12).
-### Aim
+## Aim
 The aim of this coursework is to proficiently prepare an excellent visualization and analysis of the European Flights data from [Eurocontrol](https://ansperformance.eu/data/)
-### Objectives
+## Objectives
 
 *   a.	The analysis of European Flight Dataset between 2016 and 2022 was executed to gain insights into the trends and patterns of the aviation industry during this period. 
 *   b.	Exploration of the dataset was presented using various statistical and visualization techniques to discover trends and pattern for the span of the datatset and changes during the pandemic.
@@ -62,7 +62,7 @@ The **Flights Dataset** was downloaded from the [Github link](https://github.com
 #Loading the dataset 
 flight <- read.csv("flights.csv")
 ```
-# Data Exploration
+## Data Exploration
 ### Using summary tools to understand the dataset
 The dimension of the flight dataset can be obtained by using the dim() function from the 'dplyr' library
 ```{r Dimension, warning=FALSE}
@@ -154,7 +154,7 @@ Figure 1.2: Boxplot: Number of arrivals across years
 
 Figure 1.1 and 1.2 above shows the distribution of the mean, 1st, 2nd and 3rd interquartile range. It can also be seen that years such as 2021 contain outliers: the values beyond the whiskers, they can sometimes negatively skew result of analysis. Each box represent the 1st, 2nd and 3rd interquartile range. For instance,year 2017 in figure 1.2 seem to have a larger interquartile range (the box), this means the middle 50% has more spread than that of 2020 which as a smaller interquartile range.
 
-# Data Cleaning/Wrangling Process
+## Data Cleaning/Wrangling Process
 
 ## Evaluating Missing data
 R provides a number of functions for identifying observations that contain missing values. The function is.na() allows one to test for the presence of missing values (Robert, 2015). The pipe operator and the *summarise_all()* from the **dplyr** package was used to evaluate the total number of missing values in the flight dataset as shown below
@@ -206,9 +206,9 @@ tail(flights)
 ```
 Using the mutate() function from the *'dplyr'* library and the mdy()function from the *'lubridate'* library, the date of flight (chr) was converted to date format for seamless analysis. Applying the head()function shows that the date column has been converted to date format.
 
-# Exploratory Data Analysis
+## Exploratory Data Analysis
 
-## Air travel pattern from 2016 to 2021
+### Air travel pattern from 2016 to 2021
 
 ### 1.    What is the trend of air traffic demand over time, and what is the impact of the COVID-19 pandemic on the number of flights? 
 
@@ -236,7 +236,7 @@ total_flight_counts %>%
   labs(x = "Month", 
        y = "Total Flights", 
        title = "European Flight Data: Trend of Total Number of Flights by Month", 
-       caption = "Visualization by: Tunde Adeyi") +
+       caption = "Visualization by: Edmond Nathan") +
   scale_color_discrete(name = "Year") 
 head(flights)
 ggsave("d.png", height = 8, width = 6)
@@ -274,7 +274,7 @@ total_flights_by_year_month %>%
        subtitle = "Total Flights by Month-Year Between 2019 and 2021",
        x = "Year_Month", 
        y = "Total Number of Fights",
-       caption = "Visualization by: Tunde Adeyi")
+       caption = "Visualization by: Edmond Nathan")
 
 ```
 Figure 2.2: Impact of COVID-19 on air travel (2019-2021)
@@ -305,7 +305,7 @@ flight_COVID_19 %>%
   theme_void() +
   theme(legend.position="none") +
   labs(title = "Percentage of Total Flights by Year (2019-2021)",
-       caption = "Visualization by: Tunde Adeyi",
+       caption = "Visualization by: Edmond Nathan",
        fill = "Year")
 ggsave("DP.png", height = 8, width = 10)  
 
@@ -320,7 +320,7 @@ DP1 <- flight_COVID_19 %>%
   theme_void() +
   theme(legend.position="none") 
   #labs(title = "Percentage of Total Flights by Year (2019-2021)",
-       #caption = "Visualization by: Tunde Adeyi",
+       #caption = "Visualization by: Edmond Nathan",
       # fill = "Year")
 ggsave("DP1.png", height = 8, width = 10)  
 
@@ -360,7 +360,7 @@ total_flight_by_country_year %>%
       subtitle = "Top 10 countries",
       x = "Year",
       y = "Total Number of Flights", 
-      caption = "Visualization by: Tunde Adeyi")
+      caption = "Visualization by: Edmond Nathan")
   
 ```
  Figure 3.1: Top 10 countries with the highest traffic by year
@@ -395,7 +395,7 @@ total_flight_by_month %>%
     labs(title="European Flight Data: Top Countries with Highest Air Traffic by Month", 
          x = "Month", 
          y = "Total Number of Flights", 
-         caption = "Visulization by: Tunde Adeyi")
+         caption = "Visulization by: Edmond Nathan")
 ```
  Figure 3.2: Top Countries with Highest Air Traffic by Month
  
@@ -481,7 +481,7 @@ monthly_total_flight %>%
   labs(title="European Fllight Data: The Total Monthly Flight Pattern",
        x= "Month",
        y= "Flight Monthly Total Arrivals and Departures",
-       caption = "Visualization by: Tunde Adeyi")
+       caption = "Visualization by: Edmond Nathan")
 
 
 
@@ -498,7 +498,7 @@ ab<-monthly_total_flights %>%
   labs(title="European Fllight Data: The Average Total Monthly Flight Pattern",
        x= "Month",
        y= "Flight Average Monthly Total Arrivals and Departures",
-       caption = "Visualization by: Tunde Adeyi")
+       caption = "Visualization by: Edmond Nathan")
 
 
 ggsave("ab.png", height = 8, width = 12)
@@ -536,7 +536,7 @@ monthly_flights_avg %>%
   labs(title ="European Flights Data: Flight demand and capacity by month", 
        x= "Month", 
        y = "Average number of flights",
-       caption = "Visualization by: Tunde Adeyi") 
+       caption = "Visualization by: Edmond Nathan") 
 ```
 Figure 4.2: Flight demand and capacity by month
  
@@ -563,7 +563,7 @@ ggplot(monthly_total_flights, aes(x = month, y = total_flights_per_month)) +
   labs(title="European Flight Data: Total Monthly Flights", 
        x = "Month", 
        y = "Total Flights",
-       caption = "Visualization by: Tunde Adeyi")
+       caption = "Visualization by: Edmond Nathan")
 ```
   Figure 4.3: Total Monthly Flights
   
