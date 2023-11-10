@@ -1,11 +1,8 @@
 ---
-title: "Analysis of Bike Share Cyclistic Data"
-author: "Edmond Nathan"
-date: "2023-05-02"
-output:
-  word_document: default
-  html_document: default
----
+#Analysis of Bike Share Cyclistic Data"
+#By Edmond Nathan
+#2023-05-02"
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -26,7 +23,7 @@ The stakeholders for the fictitious cyclistic bike share company are:
 *3.   Cyclistic executive team
 *4.   Bike users
 
-### Business Task
+## Business Task
 The business task is to better understand how annual members and casual riders use Cyclistic bikes differently. This insight can help the marketing team design design a strategy that help convert more casual members into annual members.
 
 
