@@ -1,12 +1,7 @@
----
-title: "IMPACT OF COVID19 ON AIR TRAVEL"
-author: "Edmond Nathan"
-date: "2023-04-20"
-  output:
-  word_document: default
-  html_document: default
-  pdf_document: default
----
+
+# IMPACT OF COVID19 ON AIR TRAVEL
+# By Edmond Nathan
+# on 2023-04-20
 
 
 ```{r global-options, include=FALSE}
