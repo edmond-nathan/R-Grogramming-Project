@@ -1,7 +1,7 @@
 
-#Analysis of Bike Share Cyclistic Data"
-#By Edmond Nathan
-#2023-05-02"
+# Analysis of Bike Share Cyclistic Data"
+#          By Edmond Nathan
+#             2023-05-02"
 
 
 ```{r setup, include=FALSE}
