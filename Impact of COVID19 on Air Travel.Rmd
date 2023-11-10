@@ -241,7 +241,7 @@ total_flight_counts %>%
   labs(x = "Month", 
        y = "Total Flights", 
        title = "European Flight Data: Trend of Total Number of Flights by Month", 
-       caption = "Visualization by: Tunde Adeyi") +
+       caption = "Visualization by: Edmond Nathan") +
   scale_color_discrete(name = "Year") 
 head(flights)
 ggsave("d.png", height = 8, width = 6)
@@ -279,7 +279,7 @@ total_flights_by_year_month %>%
        subtitle = "Total Flights by Month-Year Between 2019 and 2021",
        x = "Year_Month", 
        y = "Total Number of Fights",
-       caption = "Visualization by: Tunde Adeyi")
+       caption = "Visualization by: Edmond Nathan")
 
 ```
 Figure 2.2: Impact of COVID-19 on air travel (2019-2021)
@@ -325,7 +325,7 @@ DP1 <- flight_COVID_19 %>%
   theme_void() +
   theme(legend.position="none") 
   #labs(title = "Percentage of Total Flights by Year (2019-2021)",
-       #caption = "Visualization by: Tunde Adeyi",
+       #caption = "Visualization by: Edmond Nathan",
       # fill = "Year")
 ggsave("DP1.png", height = 8, width = 10)  
 
@@ -365,7 +365,7 @@ total_flight_by_country_year %>%
       subtitle = "Top 10 countries",
       x = "Year",
       y = "Total Number of Flights", 
-      caption = "Visualization by: Tunde Adeyi")
+      caption = "Visualization by: Edmond Nathan")
   
 ```
  Figure 3.1: Top 10 countries with the highest traffic by year
@@ -400,7 +400,7 @@ total_flight_by_month %>%
     labs(title="European Flight Data: Top Countries with Highest Air Traffic by Month", 
          x = "Month", 
          y = "Total Number of Flights", 
-         caption = "Visulization by: Tunde Adeyi")
+         caption = "Visulization by: Edmond Nathan")
 ```
  Figure 3.2: Top Countries with Highest Air Traffic by Month
  
@@ -486,7 +486,7 @@ monthly_total_flight %>%
   labs(title="European Fllight Data: The Total Monthly Flight Pattern",
        x= "Month",
        y= "Flight Monthly Total Arrivals and Departures",
-       caption = "Visualization by: Tunde Adeyi")
+       caption = "Visualization by: Edmond Nathan")
 
 
 
@@ -503,7 +503,7 @@ ab<-monthly_total_flights %>%
   labs(title="European Fllight Data: The Average Total Monthly Flight Pattern",
        x= "Month",
        y= "Flight Average Monthly Total Arrivals and Departures",
-       caption = "Visualization by: Tunde Adeyi")
+       caption = "Visualization by: Edmond Nathan")
 
 
 ggsave("ab.png", height = 8, width = 12)
@@ -541,7 +541,7 @@ monthly_flights_avg %>%
   labs(title ="European Flights Data: Flight demand and capacity by month", 
        x= "Month", 
        y = "Average number of flights",
-       caption = "Visualization by: Tunde Adeyi") 
+       caption = "Visualization by: Edmond Nathan") 
 ```
 Figure 4.2: Flight demand and capacity by month
  
@@ -568,7 +568,7 @@ ggplot(monthly_total_flights, aes(x = month, y = total_flights_per_month)) +
   labs(title="European Flight Data: Total Monthly Flights", 
        x = "Month", 
        y = "Total Flights",
-       caption = "Visualization by: Tunde Adeyi")
+       caption = "Visualization by: Edmond Nathan")
 ```
   Figure 4.3: Total Monthly Flights
   
